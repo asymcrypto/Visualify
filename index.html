@@ -3,34 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visualify | Built by ViralizeLab</title>
+  <title>Visualify | ViralizeLab</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app">
-    <h1>🎨 Visualify</h1>
-    <p>Turn any idea or text into a shareable visual instantly.</p>
-    
-    <textarea id="textInput" placeholder="Type something creative..."></textarea>
-    
-    <div class="color-picker">
+    <h1>Visualify by ViralizeLab</h1>
+    <p>Turn tweets, ideas, or text into beautiful visuals instantly.</p>
+
+    <textarea id="textInput" placeholder="Paste your text or tweet here..."></textarea>
+
+    <div class="controls">
       <label>🎨 Background:</label>
-      <input type="color" id="bgColor" value="#ffffff">
-      <label>🖋 Text:</label>
-      <input type="color" id="textColor" value="#111111">
+      <input type="color" id="bgColor" value="#f8fafc" />
+      <label>🖼️ or Upload:</label>
+      <input type="file" id="bgImage" accept="image/*" />
     </div>
-    
+
     <button id="generateBtn">Generate Visual</button>
-    <button id="downloadBtn" style="display:none;">Download Image</button>
-    
-    <div id="output"></div>
+    <button id="downloadBtn">Download Image</button>
+
+    <div id="output" class="output">
+      <div id="visualCard" class="card">
+        <img src="https://i.ibb.co/XWd3Bdy/viralizelab-logo.png" alt="ViralizeLab Logo" class="watermark" />
+        <p id="outputText"></p>
+      </div>
+    </div>
   </div>
 
-  <footer>
-    🚀 Built by <a href="https://github.com/asymcrypto" target="_blank">ViralizeLab</a>
-  </footer>
+  <footer>🚀 Built by <b>ViralizeLab</b></footer>
 
-  <script src="html2canvas.min.js"></script>
+  <!-- html2canvas CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
