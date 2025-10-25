@@ -23,7 +23,7 @@
       margin-bottom: 20px;
     }
 
-    input, textarea {
+    input, textarea, select {
       padding: 10px;
       border-radius: 8px;
       border: 1px solid #ccc;
@@ -51,6 +51,7 @@
       text-align: left;
       position: relative;
       font-family: "Poppins", sans-serif;
+      transition: background 0.3s, width 0.3s;
     }
 
     .profile {
@@ -76,6 +77,16 @@
     .fullname {
       font-weight: bold;
       font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .checkmark {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: inline-block;
     }
 
     .username {
@@ -99,6 +110,9 @@
       border-radius: 20px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.1);
     }
+
+    .theme-dark { background: #000; color: white; }
+    .theme-ash { background: #2e2e2e; color: #eee; }
   </style>
 </head>
 <body>
@@ -107,7 +121,25 @@
     <input type="text" id="fullname" placeholder="Full name (e.g. Asym Alwali)" />
     <input type="text" id="username" placeholder="@username" />
     <textarea id="tweetText" placeholder="Type your tweet here..." rows="3"></textarea>
-    <input type="color" id="bgColor" value="#ffffff" />
+
+    <label>Theme:</label>
+    <select id="theme">
+      <option value="white">Light</option>
+      <option value="black">Dark</option>
+      <option value="ash">Ash</option>
+    </select>
+
+    <label>Checkmark:</label>
+    <select id="checkmarkColor">
+      <option value="none">None</option>
+      <option value="blue">Blue</option>
+      <option value="yellow">Yellow</option>
+      <option value="gray">Gray</option>
+    </select>
+
+    <label>Card Width:</label>
+    <input type="range" id="cardWidth" min="350" max="600" value="450" />
+
     <input type="file" id="avatarUpload" accept="image/*" />
     <button id="generate">Generate Visual</button>
   </div>
@@ -116,7 +148,7 @@
     <div class="profile">
       <img id="avatarPreview" class="avatar" src="https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png" />
       <div class="names">
-        <div class="fullname" id="displayName">Asym Alwali</div>
+        <div class="fullname" id="displayName">Asym Alwali <span id="checkmark"></span></div>
         <div class="username" id="displayUsername">@viralizelab</div>
       </div>
     </div>
@@ -128,6 +160,8 @@
   <script>
     const avatarUpload = document.getElementById("avatarUpload");
     const avatarPreview = document.getElementById("avatarPreview");
+    const card = document.getElementById("visual-card");
+    const checkmark = document.getElementById("checkmark");
 
     avatarUpload.addEventListener("change", function(e) {
       const file = e.target.files[0];
@@ -144,17 +178,33 @@
       const fullname = document.getElementById("fullname").value || "Asym Alwali";
       const username = document.getElementById("username").value || "@viralizelab";
       const tweetText = document.getElementById("tweetText").value || "Building tools for creators and indie hackers 🚀";
-      const bgColor = document.getElementById("bgColor").value;
+      const theme = document.getElementById("theme").value;
+      const checkColor = document.getElementById("checkmarkColor").value;
+      const cardWidth = document.getElementById("cardWidth").value;
 
-      document.getElementById("visual-card").style.background = bgColor;
-      document.getElementById("displayName").innerText = fullname;
+      // Apply theme
+      card.className = "";
+      if (theme === "black") card.classList.add("theme-dark");
+      if (theme === "ash") card.classList.add("theme-ash");
+
+      // Apply checkmark color
+      if (checkColor !== "none") {
+        checkmark.style.display = "inline-block";
+        checkmark.style.background = checkColor;
+      } else {
+        checkmark.style.display = "none";
+      }
+
+      // Apply text and size
+      document.getElementById("displayName").childNodes[0].textContent = fullname + " ";
       document.getElementById("displayUsername").innerText = username;
       document.getElementById("displayTweet").innerText = tweetText;
+      card.style.width = cardWidth + "px";
 
-      html2canvas(document.getElementById("visual-card"), { useCORS: true }).then(canvas => {
+      html2canvas(card, { useCORS: true }).then(canvas => {
         const img = document.createElement("img");
         img.src = canvas.toDataURL("image/png");
-        img.style.width = "450px";
+        img.style.width = cardWidth + "px";
         const output = document.getElementById("output");
         output.innerHTML = "";
         output.appendChild(img);
@@ -163,4 +213,4 @@
   </script>
 
 </body>
-</html>
+                               </html>
