@@ -3,62 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visualify — Built by GitForge</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: #f8f9fb;
-      color: #111;
-      text-align: center;
-      padding: 40px;
-    }
-    #capture {
-      display: inline-block;
-      background: white;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      width: 320px;
-    }
-    .footer {
-      margin-top: 10px;
-      font-size: 14px;
-      color: #555;
-    }
-    .footer span {
-      font-weight: bold;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      border: none;
-      background: #111;
-      color: white;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-  </style>
+  <title>Visualify | Built by ViralizeLab</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="capture">
-    <h3>https://x.com/Asym_Alwali/status/198212669347817074</h3>
-    <div class="footer">
-      ⚙️ Built by <span>GitForge</span>
+  <div class="app">
+    <h1>🎨 Visualify</h1>
+    <p>Turn any idea or text into a shareable visual instantly.</p>
+    
+    <textarea id="textInput" placeholder="Type something creative..."></textarea>
+    
+    <div class="color-picker">
+      <label>🎨 Background:</label>
+      <input type="color" id="bgColor" value="#ffffff">
+      <label>🖋 Text:</label>
+      <input type="color" id="textColor" value="#111111">
     </div>
+    
+    <button id="generateBtn">Generate Visual</button>
+    <button id="downloadBtn" style="display:none;">Download Image</button>
+    
+    <div id="output"></div>
   </div>
 
-  <button id="download">Download Visual</button>
+  <footer>
+    🚀 Built by <a href="https://github.com/asymcrypto" target="_blank">ViralizeLab</a>
+  </footer>
 
-  <script>
-    document.getElementById("download").addEventListener("click", () => {
-      html2canvas(document.querySelector("#capture")).then(canvas => {
-        const link = document.createElement("a");
-        link.download = "visualify.png";
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-      });
-    });
-  </script>
+  <script src="html2canvas.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
