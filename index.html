@@ -3,38 +3,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visualify | ViralizeLab</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Visualify by ViralizeLab</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0f172a;
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #38bdf8;
+    }
+    textarea {
+      width: 100%;
+      max-width: 400px;
+      height: 100px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button {
+      background: #38bdf8;
+      color: #0f172a;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: #0ea5e9;
+    }
+    #visualCard {
+      display: none;
+      width: 400px;
+      min-height: 250px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.3);
+    }
+  </style>
 </head>
 <body>
-  <div class="app">
-    <h1>Visualify by ViralizeLab</h1>
-    <p>Turn tweets, ideas, or text into beautiful visuals instantly.</p>
 
-    <textarea id="textInput" placeholder="Paste your text or tweet here..."></textarea>
+  <h1>Visualify — ViralizeLab</h1>
 
-    <div class="controls">
-      <label>🎨 Background:</label>
-      <input type="color" id="bgColor" value="#f8fafc" />
-      <label>🖼️ or Upload:</label>
-      <input type="file" id="bgImage" accept="image/*" />
-    </div>
+  <textarea id="textInput" placeholder="Enter your tweet or blog snippet..."></textarea>
 
+  <div class="controls">
+    <input type="color" id="bgColor" value="#6366f1" />
+    <input type="file" id="bgImage" accept="image/*" />
     <button id="generateBtn">Generate Visual</button>
-    <button id="downloadBtn">Download Image</button>
-
-    <div id="output" class="output">
-      <div id="visualCard" class="card">
-        <img src="https://i.ibb.co/XWd3Bdy/viralizelab-logo.png" alt="ViralizeLab Logo" class="watermark" />
-        <p id="outputText"></p>
-      </div>
-    </div>
+    <button id="downloadBtn">Download</button>
   </div>
 
-  <footer>🚀 Built by <b>ViralizeLab</b></footer>
+  <div id="visualCard">
+    <div id="outputText">Your generated visual will appear here</div>
+  </div>
 
-  <!-- html2canvas CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="script.js"></script>
+  <script>
+    const textInput = document.getElementById("textInput");
+    const outputText = document.getElementById("outputText");
+    const visualCard = document.getElementById("visualCard");
+    const bgColor = document.getElementById("bgColor");
+    const bgImage = document.getElementById("bgImage");
+
+    document.getElementById("generateBtn").addEventListener("click", () => {
+      const text = textInput.value.trim();
+      if (!text) {
+        alert("Please enter some text to generate.");
+        return;
+      }
+
+      outputText.innerText = text;
+      visualCard.style.display = "flex";
+      visualCard.style.background = bgColor.value;
+      visualCard.style.backgroundSize = "cover";
+      visualCard.style.backgroundPosition = "center";
+    });
+
+    bgImage.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          visualCard.style.backgroundImage = `url(${event.target.result})`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      html2canvas(visualCard, { scale: 2 }).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "visualify-viralizelab.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
+    });
+  </script>
 </body>
-</html>
+      </html>
