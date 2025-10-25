@@ -1,216 +1,317 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visualify by ViralizeLab</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Visualify — ViralizeLab</title>
+
+  <!-- html2canvas CDN -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
   <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: #e9eff3;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px;
+    :root{
+      --bg:#e9eff3; --panel:#fff; --text:#111; --muted:#555;
+    }
+    body{
+      font-family: Inter, system-ui, -apple-system, "Poppins", "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: var(--bg);
+      margin:0; padding:28px; display:flex; flex-direction:column; align-items:center;
+      color:var(--text);
     }
 
-    .editor {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
+    h1{margin:0 0 14px; font-size:20px; color:#0f172a;}
+    .container{width:100%; max-width:980px;}
+
+    .tools{
+      display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px;
+      align-items:center;
+    }
+    .panel{
+      background:var(--panel); border-radius:12px; padding:12px; box-shadow:0 8px 30px rgba(6,10,15,0.06);
+    }
+    .panel.small{padding:10px;}
+    .label{font-size:12px; color:var(--muted); margin-bottom:6px; display:block;}
+
+    input[type="text"], textarea, select {
+      width:320px; max-width:100%;
+      padding:10px; border-radius:8px; border:1px solid #e6e9ef; font-size:14px; box-sizing:border-box;
+    }
+    textarea{min-height:84px; resize:vertical;}
+    .row{display:flex; gap:12px; align-items:center; flex-wrap:wrap;}
+
+    button{
+      background:#0f172a; color:#fff; border:none; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:600;
+    }
+    button.ghost{background:transparent; color:#0f172a; border:1px solid rgba(15,23,42,0.06);}
+
+    .card-wrap{display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start;}
+    .visual-card{
+      width:540px; max-width:100%; min-height:240px; border-radius:16px; overflow:hidden; position:relative;
+      padding:18px; box-sizing:border-box; display:flex; flex-direction:column; gap:12px; justify-content:flex-start;
+      background:linear-gradient(135deg,#6366f1,#ec4899); color:#fff;
+      box-shadow:0 20px 40px rgba(2,6,23,0.15);
+    }
+    .profile{display:flex; gap:12px; align-items:center;}
+    .avatar{width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.12);}
+    .names{display:flex; flex-direction:column;}
+    .display-name{font-weight:700; font-size:16px; display:flex; align-items:center; gap:8px;}
+    .display-handle{font-size:13px; color:rgba(255,255,255,0.85);}
+    .tweet-text{font-size:18px; line-height:1.2; white-space:pre-wrap; margin-top:6px; color:inherit;}
+    .card-footer{position:absolute; bottom:10px; left:18px; right:18px; display:flex; justify-content:space-between; align-items:center; font-size:12px; opacity:0.95;}
+    .branding{font-weight:600; opacity:0.9}
+
+    /* themes */
+    .theme-white{background:#ffffff; color:#0b1220}
+    .theme-black{background:#0b1220; color:#f8fafc}
+    .theme-ash{background:#2b2b2b; color:#eef0f2}
+
+    /* checkmark circle */
+    .checkmark{
+      width:18px; height:18px; border-radius:50%; display:inline-block; box-shadow:0 2px 6px rgba(0,0,0,0.15);
+      border:2px solid rgba(255,255,255,0.14);
     }
 
-    input, textarea, select {
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      width: 300px;
-      font-size: 14px;
-      outline: none;
-    }
+    /* output preview */
+    #output img{max-width:100%; border-radius:12px; box-shadow:0 18px 50px rgba(2,6,23,0.12);}
 
-    button {
-      background: #000;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: bold;
+    /* responsive smaller editors */
+    @media (max-width:760px){
+      .tools{flex-direction:column; align-items:stretch;}
+      .visual-card{width:100%}
     }
-
-    #visual-card {
-      width: 450px;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      text-align: left;
-      position: relative;
-      font-family: "Poppins", sans-serif;
-      transition: background 0.3s, width 0.3s;
-    }
-
-    .profile {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid #ddd;
-    }
-
-    .names {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.2;
-    }
-
-    .fullname {
-      font-weight: bold;
-      font-size: 15px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .checkmark {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-
-    .username {
-      color: #555;
-      font-size: 14px;
-    }
-
-    .tweet {
-      margin-top: 12px;
-      font-size: 16px;
-      color: #222;
-      white-space: pre-wrap;
-    }
-
-    #output {
-      margin-top: 25px;
-      text-align: center;
-    }
-
-    #output img {
-      border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    }
-
-    .theme-dark { background: #000; color: white; }
-    .theme-ash { background: #2e2e2e; color: #eee; }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Visualify — ViralizeLab</h1>
 
-  <div class="editor">
-    <input type="text" id="fullname" placeholder="Full name (e.g. Asym Alwali)" />
-    <input type="text" id="username" placeholder="@username" />
-    <textarea id="tweetText" placeholder="Type your tweet here..." rows="3"></textarea>
+    <div class="tools">
+      <div class="panel small">
+        <label class="label">Name</label>
+        <input id="fullname" type="text" placeholder="Full name (e.g. Asym Alwali)" value="Asym Alwali" />
+      </div>
 
-    <label>Theme:</label>
-    <select id="theme">
-      <option value="white">Light</option>
-      <option value="black">Dark</option>
-      <option value="ash">Ash</option>
-    </select>
+      <div class="panel small">
+        <label class="label">Handle</label>
+        <input id="handle" type="text" placeholder="@Asym_Alwali" value="@Asym_Alwali" />
+      </div>
 
-    <label>Checkmark:</label>
-    <select id="checkmarkColor">
-      <option value="none">None</option>
-      <option value="blue">Blue</option>
-      <option value="yellow">Yellow</option>
-      <option value="gray">Gray</option>
-    </select>
+      <div class="panel small">
+        <label class="label">Avatar</label>
+        <input id="avatarUpload" type="file" accept="image/*" />
+      </div>
 
-    <label>Card Width:</label>
-    <input type="range" id="cardWidth" min="350" max="600" value="450" />
+      <div class="panel small">
+        <label class="label">Theme</label>
+        <select id="theme">
+          <option value="color">Gradient (Viral)</option>
+          <option value="white">White</option>
+          <option value="black">Black</option>
+          <option value="ash">Ash</option>
+        </select>
+      </div>
 
-    <input type="file" id="avatarUpload" accept="image/*" />
-    <button id="generate">Generate Visual</button>
-  </div>
+      <div class="panel small">
+        <label class="label">Checkmark</label>
+        <select id="checkColor">
+          <option value="none">None</option>
+          <option value="#1d9bf0">Blue</option>
+          <option value="#f8b500">Gold</option>
+          <option value="#9aa0a6">Gray</option>
+        </select>
+      </div>
 
-  <div id="visual-card">
-    <div class="profile">
-      <img id="avatarPreview" class="avatar" src="https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png" />
-      <div class="names">
-        <div class="fullname" id="displayName">Asym Alwali <span id="checkmark"></span></div>
-        <div class="username" id="displayUsername">@viralizelab</div>
+      <div class="panel small">
+        <label class="label">Card Width</label>
+        <input id="cardWidth" type="range" min="300" max="800" value="540" />
+      </div>
+
+    </div>
+
+    <div style="margin-top:14px;" class="panel">
+      <label class="label">Tweet / Text</label>
+      <textarea id="tweetText" placeholder="Type your tweet content here..." rows="4">Building tools for creators and indie hackers 🚀</textarea>
+      <div style="display:flex; gap:8px; margin-top:10px; align-items:center;">
+        <input id="bgColor" type="color" value="#6366f1" title="Card background color" />
+        <input id="bgImage" type="file" accept="image/*" />
+        <button id="generateBtn">Generate Preview</button>
+        <button id="downloadBtn">Download Image</button>
       </div>
     </div>
-    <div class="tweet" id="displayTweet">Building tools for creators and indie hackers 🚀</div>
+
+    <div style="margin-top:18px;" class="card-wrap">
+      <!-- Visual card (this is what will be exported) -->
+      <div id="visualCard" class="visual-card" role="img" aria-label="Preview card" >
+        <div class="profile">
+          <img id="avatar" class="avatar" src="https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png" alt="avatar"/>
+          <div class="names">
+            <div class="display-name" id="displayName">
+              Asym Alwali <span id="checkDot" style="display:inline-block;"></span>
+            </div>
+            <div class="display-handle" id="displayHandle">@Asym_Alwali</div>
+          </div>
+        </div>
+
+        <div class="tweet-text" id="displayTweet">Building tools for creators and indie hackers 🚀</div>
+
+        <div class="card-footer">
+          <div class="branding">Built by ViralizeLab • @Asym_Alwali • @ViralizeLab</div>
+          <div style="opacity:0.8; font-size:11px;">Visualify</div>
+        </div>
+      </div>
+
+      <!-- Generated preview image area -->
+      <div id="output" class="panel" style="min-width:260px; padding:14px;">
+        <div class="label">Generated preview</div>
+        <div id="imgHolder">No preview yet — click Generate</div>
+      </div>
+    </div>
+
   </div>
 
-  <div id="output"></div>
+<script>
+/* Elements */
+const fullnameEl = document.getElementById('fullname');
+const handleEl = document.getElementById('handle');
+const tweetTextEl = document.getElementById('tweetText');
+const avatarUpload = document.getElementById('avatarUpload');
+const avatarEl = document.getElementById('avatar');
+const themeEl = document.getElementById('theme');
+const checkColorEl = document.getElementById('checkColor');
+const cardWidthEl = document.getElementById('cardWidth');
+const bgColorEl = document.getElementById('bgColor');
+const bgImageEl = document.getElementById('bgImage');
+const visualCard = document.getElementById('visualCard');
+const displayName = document.getElementById('displayName');
+const displayHandle = document.getElementById('displayHandle');
+const displayTweet = document.getElementById('displayTweet');
+const checkDot = document.getElementById('checkDot');
+const imgHolder = document.getElementById('imgHolder');
+const generateBtn = document.getElementById('generateBtn');
+const downloadBtn = document.getElementById('downloadBtn');
 
-  <script>
-    const avatarUpload = document.getElementById("avatarUpload");
-    const avatarPreview = document.getElementById("avatarPreview");
-    const card = document.getElementById("visual-card");
-    const checkmark = document.getElementById("checkmark");
+/* Avatar upload -> preview */
+avatarUpload.addEventListener('change', (e)=>{
+  const f = e.target.files && e.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = (ev)=> avatarEl.src = ev.target.result;
+  r.readAsDataURL(f);
+});
 
-    avatarUpload.addEventListener("change", function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          avatarPreview.src = evt.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+/* Background image upload */
+bgImageEl.addEventListener('change', (e)=>{
+  const f = e.target.files && e.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = (ev)=> {
+    visualCard.style.backgroundImage = `url(${ev.target.result})`;
+    visualCard.style.backgroundSize = 'cover';
+    visualCard.style.backgroundPosition = 'center';
+  };
+  r.readAsDataURL(f);
+});
 
-    document.getElementById("generate").addEventListener("click", () => {
-      const fullname = document.getElementById("fullname").value || "Asym Alwali";
-      const username = document.getElementById("username").value || "@viralizelab";
-      const tweetText = document.getElementById("tweetText").value || "Building tools for creators and indie hackers 🚀";
-      const theme = document.getElementById("theme").value;
-      const checkColor = document.getElementById("checkmarkColor").value;
-      const cardWidth = document.getElementById("cardWidth").value;
+/* Generate preview */
+function applyTheme(theme){
+  // reset classes and inline staged styles
+  visualCard.className = 'visual-card';
+  visualCard.style.backgroundImage = '';
+  visualCard.style.color = '';
+  if(theme === 'white'){
+    visualCard.classList.add('theme-white');
+    visualCard.style.background = '#ffffff';
+  } else if(theme === 'black'){
+    visualCard.classList.add('theme-black');
+    visualCard.style.background = '#0b1220';
+  } else if(theme === 'ash'){
+    visualCard.classList.add('theme-ash');
+    visualCard.style.background = '#2b2b2b';
+  } else {
+    // gradient / default viral
+    visualCard.style.background = bgColorEl.value || 'linear-gradient(135deg,#6366f1,#ec4899)';
+  }
+}
 
-      // Apply theme
-      card.className = "";
-      if (theme === "black") card.classList.add("theme-dark");
-      if (theme === "ash") card.classList.add("theme-ash");
+function applyCheck(color){
+  if(!color || color === 'none') {
+    checkDot.style.display = 'none';
+    return;
+  }
+  checkDot.style.display = 'inline-block';
+  checkDot.style.width = '18px';
+  checkDot.style.height = '18px';
+  checkDot.style.borderRadius = '50%';
+  checkDot.style.background = color;
+  checkDot.style.boxShadow = '0 2px 6px rgba(0,0,0,0.12)';
+  checkDot.style.border = '2px solid rgba(255,255,255,0.12)';
+}
 
-      // Apply checkmark color
-      if (checkColor !== "none") {
-        checkmark.style.display = "inline-block";
-        checkmark.style.background = checkColor;
-      } else {
-        checkmark.style.display = "none";
-      }
+/* When user moves width slider */
+cardWidthEl.addEventListener('input', ()=>{
+  visualCard.style.width = cardWidthEl.value + 'px';
+});
 
-      // Apply text and size
-      document.getElementById("displayName").childNodes[0].textContent = fullname + " ";
-      document.getElementById("displayUsername").innerText = username;
-      document.getElementById("displayTweet").innerText = tweetText;
-      card.style.width = cardWidth + "px";
+/* Generate */
+generateBtn.addEventListener('click', async ()=>{
+  const name = fullnameEl.value || 'Asym Alwali';
+  const handle = handleEl.value || '@Asym_Alwali';
+  const tweet = tweetTextEl.value || '...';
+  const theme = themeEl.value;
+  const checkColor = checkColorEl.value;
 
-      html2canvas(card, { useCORS: true }).then(canvas => {
-        const img = document.createElement("img");
-        img.src = canvas.toDataURL("image/png");
-        img.style.width = cardWidth + "px";
-        const output = document.getElementById("output");
-        output.innerHTML = "";
-        output.appendChild(img);
-      });
-    });
-  </script>
+  displayName.childNodes[0] ? (displayName.childNodes[0].textContent = name + ' ') : displayName.textContent = name + ' ';
+  displayHandle.textContent = handle;
+  displayTweet.textContent = tweet;
+
+  // apply theme & bg color
+  applyTheme(theme);
+  applyCheck(checkColor);
+
+  // ensure width applied
+  visualCard.style.width = cardWidthEl.value + 'px';
+
+  // remove any existing preview image
+  imgHolder.innerHTML = 'Rendering preview...';
+
+  // render with html2canvas (high res)
+  try {
+    const canvas = await html2canvas(visualCard, { scale: 2, useCORS: true, backgroundColor: null });
+    const dataUrl = canvas.toDataURL('image/png');
+    const img = document.createElement('img');
+    img.src = dataUrl;
+    img.style.width = visualCard.style.width || (cardWidthEl.value + 'px');
+    imgHolder.innerHTML = '';
+    imgHolder.appendChild(img);
+  } catch(err){
+    imgHolder.innerHTML = 'Rendering failed. Try again.';
+    console.error(err);
+  }
+});
+
+/* Download button: uses current preview (re-renders to ensure up-to-date) */
+downloadBtn.addEventListener('click', async ()=>{
+  // generate afresh to ensure watermark included
+  try{
+    const canvas = await html2canvas(visualCard, { scale: 2, useCORS: true, backgroundColor: null });
+    const link = document.createElement('a');
+    const now = new Date();
+    const stamp = now.toISOString().replace(/[:.]/g,'-');
+    link.download = `visualify-${stamp}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(err){
+    alert('Download failed. Try generating first.');
+    console.error(err);
+  }
+});
+
+/* set initial defaults */
+visualCard.style.width = cardWidthEl.value + 'px';
+applyTheme('color');
+applyCheck('none');
+
+</script>
 
 </body>
-                               </html>
+  </html>
