@@ -1,403 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Visualify Pro — ViralizeLab</title>
-
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@300;400;600;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-  <!-- html2canvas CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
-  <style>
-    :root{
-      --bg:#eef2ff; --panel:#fff; --muted:#566; --accent:#0f172a;
-    }
-    *{box-sizing:border-box}
-    body{
-      font-family:Inter, Poppins, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      margin:0; padding:22px; background:linear-gradient(180deg,#f5f7fb, #eef2ff);
-      color:var(--accent);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
-    .wrap{max-width:1200px;margin:0 auto;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
-    h1{margin:0 0 8px;font-size:20px}
-    p.lead{margin:0 0 18px;color:var(--muted)}
-    .panel{background:var(--panel);border-radius:12px;padding:12px;box-shadow:0 8px 28px rgba(6,10,15,0.06)}
-    .controls{width:360px;min-width:280px}
-    .controls .section{margin-bottom:12px}
-    label.label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    input[type="text"], textarea, select {width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;font-size:14px}
-    textarea{min-height:76px;resize:vertical}
-    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    .btn{background:#0f172a;color:#fff;padding:9px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
-    .btn.ghost{background:transparent;border:1px solid rgba(15,23,42,0.06);color:var(--accent)}
-    .small{font-size:13px;padding:7px 9px;border-radius:8px}
-
-    /* visual area */
-    .visual-area{flex:1;min-width:320px;display:flex;flex-direction:column;gap:14px;align-items:center}
-    .visual-card{width:700px;max-width:100%;min-height:300px;border-radius:16px;padding:20px;position:relative;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 40px rgba(2,6,23,0.12);overflow:hidden}
-    .profile{display:flex;gap:12px;align-items:center}
-    .avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.12)}
-    .names{display:flex;flex-direction:column}
-    .fullname{font-weight:700;display:flex;gap:8px;align-items:center}
-    .handle{color:rgba(255,255,255,0.9);font-size:14px}
-    .tweet{font-size:20px;line-height:1.25;white-space:pre-wrap}
-    .card-footer{position:absolute;bottom:12px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:center;font-size:12px;opacity:0.95}
-    .branding{font-weight:600;opacity:0.9}
-
-    /* theme classes (light/dark/ash/gradient) */
-    .theme-gradient{background:linear-gradient(135deg,#6366f1,#ec4899);color:#fff}
-    .theme-white{background:#ffffff;color:#0b1220}
-    .theme-black{background:#0b1220;color:#f8fafc}
-    .theme-ash{background:#2b2b2b;color:#eef0f2}
-
-    /* check dot */
-    .checkdot{width:18px;height:18px;border-radius:50%;display:inline-block;vertical-align:middle;border:2px solid rgba(255,255,255,0.18);}
-
-    /* generated preview box */
-    #imgHolder{min-height:120px;display:flex;align-items:center;justify-content:center}
-    #imgHolder img{max-width:100%;border-radius:12px;box-shadow:0 18px 50px rgba(2,6,23,0.12);}
-    .tiny{font-size:12px;color:var(--muted)}
-
-    /* responsive */
-    @media (max-width:980px){
-      .wrap{flex-direction:column;align-items:stretch}
-      .controls{width:100%}
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visualify | Make Your Ideas Go Viral</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="wrap">
-    <!-- left: controls -->
-    <div class="controls panel">
-      <h1>Visualify Pro</h1>
-      <p class="lead">Mix of minimal card + creative dashboard. Create, style, export visuals fast. Built by ViralizeLab.</p>
+  <header class="navbar">
+    <img src="assets/logo.png" alt="ViralizeLab Logo" class="logo">
+    <h1>Visualify</h1>
+    <nav>
+      <a href="index.html" class="active">Home</a>
+      <a href="create.html">Create</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
 
-      <div class="section panel">
-        <label class="label">Template</label>
-        <select id="template">
-          <option value="tweet">Tweet Card</option>
-          <option value="quote">Quote Card</option>
-          <option value="blog">Blog Snippet</option>
-          <option value="insight">Insight Card</option>
-          <option value="free">Freestyle</option>
-        </select>
-      </div>
-
-      <div class="section panel">
-        <label class="label">Name & handle</label>
-        <input id="fullname" type="text" placeholder="Full name" value="Asym Alwali"/>
-        <div style="height:8px"></div>
-        <input id="handle" type="text" placeholder="@handle" value="@Asym_Alwali"/>
-      </div>
-
-      <div class="section panel">
-        <label class="label">Avatar</label>
-        <input id="avatarUpload" type="file" accept="image/*"/>
-      </div>
-
-      <div class="section panel">
-        <label class="label">Text / Tweet</label>
-        <textarea id="tweetText" placeholder="Write your tweet or content...">Building tools for creators and indie hackers 🚀</textarea>
-      </div>
-
-      <div class="section panel">
-        <label class="label">Theme / Background</label>
-        <div class="row">
-          <select id="theme" class="small">
-            <option value="gradient">Gradient (Viral)</option>
-            <option value="white">White</option>
-            <option value="black">Black</option>
-            <option value="ash">Ash</option>
-          </select>
-          <input id="bgColor" type="color" value="#6366f1" title="Background color"/>
-          <input id="bgImage" type="file" accept="image/*" title="Background image"/>
-        </div>
-      </div>
-
-      <div class="section panel">
-        <label class="label">Checkmark / Badge</label>
-        <div class="row">
-          <select id="checkColor" class="small">
-            <option value="none">None</option>
-            <option value="#1d9bf0">Blue</option>
-            <option value="#f8b500">Gold</option>
-            <option value="#9aa0a6">Gray</option>
-          </select>
-          <label class="label" style="margin:0 0 0 6px">Corner</label>
-          <input id="radius" type="range" min="6" max="40" value="16"/>
-        </div>
-        <div style="height:8px"></div>
-        <label class="label">Shadow depth</label>
-        <input id="shadow" type="range" min="4" max="40" value="20"/>
-      </div>
-
-      <div class="section panel">
-        <label class="label">Typography</label>
-        <div class="row">
-          <select id="font" class="small">
-            <option value="Inter">Inter</option>
-            <option value="Poppins">Poppins</option>
-            <option value="Montserrat">Montserrat</option>
-          </select>
-          <input id="fontSize" type="range" min="14" max="28" value="20"/>
-        </div>
-      </div>
-
-      <div class="section panel">
-        <label class="label">Card width (px)</label>
-        <input id="cardWidth" type="range" min="320" max="900" value="700"/>
-      </div>
-
-      <div class="section panel">
-        <label class="label">Output & Branding</label>
-        <div class="row">
-          <button id="generateBtn" class="btn">Generate Preview</button>
-          <button id="downloadBtn" class="btn ghost">Download</button>
-        </div>
-        <div style="height:8px"></div>
-        <div class="row">
-          <button id="copyBtn" class="btn ghost">Copy Image</button>
-          <button id="tweetBtn" class="btn ghost">Open Tweet Composer</button>
-        </div>
-        <div style="height:8px"></div>
-        <div class="row">
-          <label style="font-size:13px"><input id="brandingToggle" type="checkbox" checked/> Include branding in image</label>
-        </div>
-        <div style="height:8px"></div>
-        <div class="tiny">Tip: use Generate then Download for best quality.</div>
-      </div>
-
+  <section class="hero">
+    <h2>Make your ideas go viral — visually.</h2>
+    <p>Turn your tweets and thoughts into beautiful visuals that grow your audience.</p>
+    <div class="buttons">
+      <a href="create.html" class="btn primary">Start Creating</a>
+      <a href="https://x.com/Asym_Alwali" target="_blank" class="btn secondary">@Asym_Alwali</a>
+      <a href="https://x.com/ViralizeLab" target="_blank" class="btn secondary">@ViralizeLab</a>
     </div>
+  </section>
 
-    <!-- right: visual + preview -->
-    <div class="visual-area">
-      <div id="visualCard" class="panel visual-card theme-gradient" aria-label="Visual preview">
-        <div class="profile">
-          <img id="avatar" class="avatar" src="https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png" alt="avatar"/>
-          <div class="names">
-            <div class="fullname" id="displayName">Asym Alwali <span id="dotCheck"></span></div>
-            <div class="handle" id="displayHandle">@Asym_Alwali</div>
-          </div>
-        </div>
+  <section class="features">
+    <h3>Why Visualify?</h3>
+    <ul>
+      <li>🎨 Create stunning visuals in seconds</li>
+      <li>🌓 Switch between Light & Dark themes</li>
+      <li>✅ Add verified badges easily</li>
+      <li>💾 Download visuals instantly</li>
+      <li>🚀 Built by creators for creators</li>
+    </ul>
+  </section>
 
-        <div class="tweet" id="displayTweet">Building tools for creators and indie hackers 🚀</div>
-
-        <div class="card-footer">
-          <div class="branding" id="brandingText">Built by ViralizeLab • @Asym_Alwali • @ViralizeLab</div>
-          <div class="tiny">Visualify</div>
-        </div>
-      </div>
-
-      <div class="panel" style="width:100%;max-width:700px">
-        <div class="label">Generated preview</div>
-        <div id="imgHolder" style="min-height:140px;display:flex;align-items:center;justify-content:center">No preview — click Generate</div>
-      </div>
-    </div>
-  </div>
-
-<script>
-/* elements */
-const fullnameEl = document.getElementById('fullname');
-const handleEl = document.getElementById('handle');
-const tweetTextEl = document.getElementById('tweetText');
-const avatarUpload = document.getElementById('avatarUpload');
-const avatarEl = document.getElementById('avatar');
-const themeEl = document.getElementById('theme');
-const bgColorEl = document.getElementById('bgColor');
-const bgImageEl = document.getElementById('bgImage');
-const checkColorEl = document.getElementById('checkColor');
-const radiusEl = document.getElementById('radius');
-const shadowEl = document.getElementById('shadow');
-const fontEl = document.getElementById('font');
-const fontSizeEl = document.getElementById('fontSize');
-const cardWidthEl = document.getElementById('cardWidth');
-const brandingToggle = document.getElementById('brandingToggle');
-
-const visualCard = document.getElementById('visualCard');
-const displayName = document.getElementById('displayName');
-const displayHandle = document.getElementById('displayHandle');
-const displayTweet = document.getElementById('displayTweet');
-const dotCheck = document.getElementById('dotCheck');
-const imgHolder = document.getElementById('imgHolder');
-
-const generateBtn = document.getElementById('generateBtn');
-const downloadBtn = document.getElementById('downloadBtn');
-const copyBtn = document.getElementById('copyBtn');
-const tweetBtn = document.getElementById('tweetBtn');
-
-let lastDataUrl = null;
-
-/* avatar upload */
-avatarUpload.addEventListener('change', (e)=>{
-  const f = e.target.files && e.target.files[0];
-  if(!f) return;
-  const r = new FileReader();
-  r.onload = ev => avatarEl.src = ev.target.result;
-  r.readAsDataURL(f);
-});
-
-/* bg image */
-bgImageEl.addEventListener('change', (e)=>{
-  const f = e.target.files && e.target.files[0];
-  if(!f) return;
-  const r = new FileReader();
-  r.onload = ev => {
-    visualCard.style.backgroundImage = `url(${ev.target.result})`;
-    visualCard.style.backgroundSize = 'cover';
-    visualCard.style.backgroundPosition = 'center';
-  };
-  r.readAsDataURL(f);
-});
-
-/* helpers */
-function applyTheme(theme){
-  visualCard.classList.remove('theme-gradient','theme-white','theme-black','theme-ash');
-  visualCard.style.backgroundImage = '';
-  if(theme === 'white'){ visualCard.classList.add('theme-white'); visualCard.style.background = '#fff'; visualCard.style.color='#0b1220'; }
-  else if(theme === 'black'){ visualCard.classList.add('theme-black'); visualCard.style.background='#0b1220'; visualCard.style.color='#f8fafc'; }
-  else if(theme === 'ash'){ visualCard.classList.add('theme-ash'); visualCard.style.background='#2b2b2b'; visualCard.style.color='#eef0f2'; }
-  else { visualCard.classList.add('theme-gradient'); visualCard.style.background = bgColorEl.value || 'linear-gradient(135deg,#6366f1,#ec4899)'; visualCard.style.color='#fff'; }
-}
-
-function applyCheck(color){
-  if(!color || color === 'none'){ dotCheck.style.display = 'none'; return; }
-  dotCheck.style.display = 'inline-block';
-  dotCheck.style.width='18px'; dotCheck.style.height='18px'; dotCheck.style.borderRadius='50%';
-  dotCheck.style.background = color;
-  dotCheck.style.boxShadow = '0 4px 12px rgba(2,6,23,0.12)';
-  dotCheck.style.border = '2px solid rgba(255,255,255,0.12)';
-}
-
-/* live controls */
-radiusEl.addEventListener('input', ()=> visualCard.style.borderRadius = radiusEl.value + 'px');
-shadowEl.addEventListener('input', ()=> visualCard.style.boxShadow = `0 ${shadowEl.value}px ${shadowEl.value*2}px rgba(2,6,23,0.12)`);
-fontEl.addEventListener('change', ()=> visualCard.style.fontFamily = fontEl.value + ', Inter, Poppins, system-ui');
-fontSizeEl.addEventListener('input', ()=> visualCard.style.fontSize = fontSizeEl.value + 'px');
-cardWidthEl.addEventListener('input', ()=> visualCard.style.width = cardWidthEl.value + 'px');
-
-/* template presets */
-document.getElementById('template').addEventListener('change',(e)=>{
-  const t = e.target.value;
-  if(t === 'tweet'){
-    // defaults for tweet
-    fontSizeEl.value = 20; fontSizeEl.dispatchEvent(new Event('input'));
-    radiusEl.value = 16; radiusEl.dispatchEvent(new Event('input'));
-  }else if(t === 'quote'){
-    fontSizeEl.value = 22; fontSizeEl.dispatchEvent(new Event('input'));
-    radiusEl.value = 12; radiusEl.dispatchEvent(new Event('input'));
-  }else if(t === 'blog'){
-    fontSizeEl.value = 18; fontSizeEl.dispatchEvent(new Event('input'));
-    radiusEl.value = 12; radiusEl.dispatchEvent(new Event('input'));
-  }else if(t === 'insight'){
-    fontSizeEl.value = 24; fontSizeEl.dispatchEvent(new Event('input'));
-    radiusEl.value = 8; radiusEl.dispatchEvent(new Event('input'));
-  }else{ /* freestyle */ }
-});
-
-/* generate preview */
-generateBtn.addEventListener('click', async ()=>{
-  const name = fullnameEl.value || 'Asym Alwali';
-  const handle = handleEl.value || '@Asym_Alwali';
-  const tweet = tweetTextEl.value || '';
-  const theme = themeEl.value;
-  const checkColor = checkColorEl.value;
-
-  // update DOM
-  displayName.childNodes[0] ? (displayName.childNodes[0].textContent = name + ' ') : displayName.textContent = name + ' ';
-  displayHandle.textContent = handle;
-  displayTweet.textContent = tweet;
-
-  applyTheme(theme);
-  applyCheck(checkColor);
-
-  // branding toggle
-  if(brandingToggle.checked){
-    document.getElementById('brandingText').style.display = 'block';
-  } else {
-    document.getElementById('brandingText').style.display = 'none';
-  }
-
-  // ensure width and font size applied
-  visualCard.style.width = cardWidthEl.value + 'px';
-  visualCard.style.fontSize = fontSizeEl.value + 'px';
-  visualCard.style.borderRadius = radiusEl.value + 'px';
-  visualCard.style.boxShadow = `0 ${shadowEl.value}px ${shadowEl.value*2}px rgba(2,6,23,0.12)`;
-
-  // render
-  imgHolder.textContent = 'Rendering preview...';
-  try{
-    const canvas = await html2canvas(visualCard, { scale: 2, useCORS: true, backgroundColor: null });
-    const dataUrl = canvas.toDataURL('image/png');
-    lastDataUrl = dataUrl;
-    const img = document.createElement('img');
-    img.src = dataUrl;
-    img.style.maxWidth = '100%';
-    imgHolder.innerHTML = '';
-    imgHolder.appendChild(img);
-  }catch(err){
-    console.error(err);
-    imgHolder.textContent = 'Preview failed. Try again.';
-  }
-});
-
-/* download */
-downloadBtn.addEventListener('click', async ()=>{
-  try{
-    // ensure latest render
-    const canvas = await html2canvas(visualCard, { scale: 2, useCORS: true, backgroundColor: null });
-    const dataUrl = canvas.toDataURL('image/png');
-    lastDataUrl = dataUrl;
-    const link = document.createElement('a');
-    const now = new Date();
-    const stamp = now.toISOString().replace(/[:.]/g,'-');
-    link.download = `visualify-${stamp}.png`;
-    link.href = dataUrl;
-    link.click();
-  }catch(err){
-    alert('Download failed. Try generating preview first.');
-    console.error(err);
-  }
-});
-
-/* copy to clipboard (best effort) */
-copyBtn.addEventListener('click', async ()=>{
-  if(!lastDataUrl){
-    alert('Generate preview first');
-    return;
-  }
-  try{
-    const res = await fetch(lastDataUrl);
-    const blob = await res.blob();
-    const item = new ClipboardItem({ [blob.type]: blob });
-    await navigator.clipboard.write([item]);
-    alert('Image copied to clipboard — paste into chat or app');
-  }catch(err){
-    // fallback: open image in new tab
-    console.warn('clipboard copy failed', err);
-    const w = window.open(lastDataUrl, '_blank');
-    if(!w) alert('Copy failed — the preview opened in a new tab for manual save.');
-  }
-});
-
-/* tweet button (opens composer; user must attach image manually) */
-tweetBtn.addEventListener('click', ()=>{
-  const text = encodeURIComponent(tweetTextEl.value.slice(0,250) + '\n\nBuilt by ViralizeLab • @Asym_Alwali');
-  const url = `https://twitter.com/intent/tweet?text=${text}`;
-  window.open(url, '_blank');
-});
-
-/* initial apply */
-applyTheme('gradient');
-applyCheck('none');
-visualCard.style.width = cardWidthEl.value + 'px';
-visualCard.style.fontSize = fontSizeEl.value + 'px';
-visualCard.style.borderRadius = radiusEl.value + 'px';
-</script>
+  <footer>
+    <p>Built with ❤️ by <strong>ViralizeLab</strong> • <a href="https://x.com/Asym_Alwali" target="_blank">@Asym_Alwali</a> • <a href="https://x.com/ViralizeLab" target="_blank">@ViralizeLab</a></p>
+  </footer>
 </body>
-  </html>
+</html>
